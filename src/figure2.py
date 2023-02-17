@@ -11,6 +11,7 @@ import matplotlib.cm as mpl_cm
 import iris.coords
 from matplotlib.colors import TwoSlopeNorm
 import numpy as np
+import iris
 
 
 def hovmoeller_rwaves(cubes, start=0, end=500, level=8, lats=(55, 85), title='trap',
