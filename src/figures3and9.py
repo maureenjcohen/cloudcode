@@ -14,8 +14,9 @@ import iris
 
 
 def composite(cubes, time_slice=500, nlat=90, nlon=144, nlev=38, level=8, n=4,
-              cloudtype='both', fractype='mass', qscale=5, planet='trap',
-              savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+              cloudtype='both', fractype='mass', qscale=5, sim='trap',
+              meaning=False,
+              savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
               save=False):
     """ Plot composites of the cloud cover and horizontal wind vectors
     
@@ -39,10 +40,14 @@ def composite(cubes, time_slice=500, nlat=90, nlon=144, nlev=38, level=8, n=4,
         superimposed                                                    """
 
     for cube in cubes:
-        if cube.standard_name == 'x_wind':
+        if (cube.standard_name == 'x_wind' and meaning == False):
             x_wind = cube[time_slice, :, :, :].copy()
-        if cube.standard_name == 'y_wind':
+        if (cube.standard_name == 'y_wind' and meaning == False):
             y_wind = cube[time_slice, :, :, :].copy()
+        if (cube.standard_name == 'x_wind' and cloudtype == 'none' and meaning == True):
+            x_wind = cube.copy()
+        if (cube.standard_name == 'y_wind' and cloudtype == 'none' and meaning == True):
+            y_wind = cube.copy()
         if (cube.long_name == 'ice_cloud_volume_fraction_in_atmosphere_layer'  
             and fractype == 'volume' and cloudtype != 'none'):
             ice = cube[time_slice, :, :, :].copy()
@@ -67,14 +72,23 @@ def composite(cubes, time_slice=500, nlat=90, nlon=144, nlev=38, level=8, n=4,
     if cloudtype == 'ice':
         cloud = ice
         titleterm = 'Ice cloud'
+        titletime = 'day %s' %time_slice
     elif cloudtype == 'liq':
         cloud = liq
         titleterm = 'Liquid cloud'
+        titletime = 'day %s' %time_slice
     elif cloudtype == 'both':
         cloud = ice + liq
         titleterm = 'Total cloud'
-    elif cloudtype == 'none':
+        titletime = 'day %s' %time_slice
+    elif cloudtype == 'none' and meaning == False:
         titleterm = 'Horizontal wind'
+        titletime = 'day %s' %time_slice
+    elif cloudtype == 'none' and meaning == True:
+        x_wind = x_wind.collapsed('time', iris.analysis.MEAN)
+        y_wind = y_wind.collapsed('time', iris.analysis.MEAN)
+        titleterm = 'Horizontal wind'
+        titletime = 'long-term mean'
     else:
         print('Argument cloudtype must be ice, liq, both, or none. Default is both.')
     # Assign values to variables for labelling plot
@@ -92,21 +106,21 @@ def composite(cubes, time_slice=500, nlat=90, nlon=144, nlev=38, level=8, n=4,
                        np.roll(y_wind[level, ::n, ::n].data, 
                                int(nlon/(2*n)), axis=1), 
                        scale_units='xy', scale=qscale)
-        ax.quiverkey(q1, X=0.9, Y=1.05, U=qscale, label='%s m/s' %str(qscale),
+        ax.quiverkey(q1, X=0.9, Y=1.05, U=qscale*5, label='%s m/s' %str(qscale*5),
                      labelpos='E', coordinates='axes')
-        plt.title('%s, day %s, h=%s km' %
-                  (titleterm, time_slice, heights[level]))
+        plt.title('%s, %s, h=%s km' %
+                  (titleterm, titletime, heights[level]), fontsize=14)
         plt.xticks((0, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144), 
                    ('180W', '150W','120W', '90W', '60W', '30W', '0', '30E', 
                     '60E', '90E', '120E', '150E', '180E'))
         plt.yticks((0, 15, 30, 45, 60, 75, 90),
                    ('90S', '60S', '30S', '0', '30N', '60N', '90N'))
-        plt.xlabel('Longitude')
-        plt.ylabel('Latitude')
+        plt.xlabel('Longitude', fontsize=14)
+        plt.ylabel('Latitude', fontsize=14)
 
         if save == True:
-            plt.savefig(savedir + 'quiver_nocloud_%s_%s.eps' %
-                        (time_slice, planet), format='eps')
+            plt.savefig(savedir + 'quiver_nocloud_%s_%s_%s.eps' %
+                        (time_slice, sim, meaning), format='eps', bbox_inches='tight')
         else:
             pass
         plt.show()
@@ -130,22 +144,22 @@ def composite(cubes, time_slice=500, nlat=90, nlon=144, nlev=38, level=8, n=4,
                        np.roll(y_wind[level, ::n, ::n].data, 
                                int(nlon/(2*n)), axis=1), 
                        scale_units='xy', scale=qscale)
-        ax.quiverkey(q1, X=0.95, Y=1.05, U=qscale, label='%s m/s' %qscale,
+        ax.quiverkey(q1, X=1.05, Y=1.05, U=qscale*5, label='%s m/s' %(qscale*5),
                      labelpos='E', coordinates='axes')
         # Now superimpose quiver plot over the cloud cover image
-        plt.title('%s and horizontal wind, day %s, h=%s km' %
-                  (titleterm, time_slice, heights[level]))
+        plt.title('%s and horizontal wind, %s, h=%s km' %
+                  (titleterm, titletime, heights[level]), fontsize=14)
         plt.xticks((0, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144), 
                    ('180W', '150W','120W', '90W', '60W', '30W', '0', '30E', 
                     '60E', '90E', '120E', '150E', '180E'))
         plt.yticks((90, 75, 60, 45, 30, 15, 0),
                    ('90S', '60S', '30S', '0', '30N', '60N', '90N'))
-        plt.xlabel('Longitude')
-        plt.ylabel('Latitude')
+        plt.xlabel('Longitude', fontsize=14)
+        plt.ylabel('Latitude', fontsize=14)
         
         if save == True:
             plt.savefig(savedir + 'quiver_withcloud_%s_%s.eps' %
-                        (time_slice, planet), format='eps')
+                        (time_slice, sim), format='eps', bbox_inches='tight')
         else:
             pass
         plt.show()

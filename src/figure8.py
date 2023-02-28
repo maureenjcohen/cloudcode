@@ -14,7 +14,7 @@ import scipy as sp
 
 def cloud_tseries(cubes, start=0, end=600, long1=36, long2=108, filtering=True,
                ice_threshold=0.1, liq_threshold=0.1, sim='trap',
-               savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+               savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
                save=False):
     
     """ Plot time series of ice and liquid cloud at the terminators for the
@@ -59,7 +59,7 @@ def cloud_tseries(cubes, start=0, end=600, long1=36, long2=108, filtering=True,
     liquid_condensate = liquid_condensate_raw.data
     # Extract numpy array from cubes
 
-    time_axis = np.arange(start, end+1)
+    time_axis = np.arange(start, end)
     # Create x-axis of time coordinates
     heights = np.array(ice_condensate_raw.coord('level_height').points)
     # Get heights (used for weighting in mean calculation)

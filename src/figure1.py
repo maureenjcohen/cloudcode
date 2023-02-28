@@ -14,7 +14,7 @@ import numpy as np
 
 
 def climgrid(datalist, nlat=90, nlon=144, nlev=38, start=0, end=300, ndata=5,
-             savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+             savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
              save=False):
                  
     """ Create a full-page grid of plots displaying the vertical temperature 
@@ -116,17 +116,17 @@ def climgrid(datalist, nlat=90, nlon=144, nlev=38, start=0, end=300, ndata=5,
         ax[i, 0].plot(absolute_temp[:, 45, 72], heights,
                       color='b', label='Antistellar')
         ax[i, 0].legend()
-        ax[0, 0].set_title('Temperature profile [K]', fontsize=12)
-        ax[ndata-1, 0].set_xlabel('Temperature [K]')
-        ax[i, 0].set_ylabel('%s \n Height [km]' % names[i], fontsize=12)
+        ax[0, 0].set_title('Temperature profile [K]', fontsize=14)
+        ax[ndata-1, 0].set_xlabel('Temperature [K]', fontsize=14)
+        ax[i, 0].set_ylabel('%s \n Height [km]' % names[i], fontsize=18)
         # Create first plot (temperature profile) for i'th datacube
         # Label with name of simulation
 
         cont = ax[i, 1].contourf(
             lats, heights, zmzw, levels=np.arange(-60, 140, 20), cmap=redblu,
             norm=TwoSlopeNorm(0))
-        ax[0, 1].set_title('Zonal mean zonal wind [m/s]', fontsize=12)
-        ax[ndata-1, 1].set_xlabel('Latitude [degrees]')
+        ax[0, 1].set_title('Zonal mean zonal wind [m/s]', fontsize=14)
+        ax[ndata-1, 1].set_xlabel('Latitude [degrees]', fontsize=14)
         fig.colorbar(cont, ax=ax[i, 1], orientation='vertical')
         # Create second plot (contourf of ZMZW) for i'th datacube
 
@@ -135,15 +135,15 @@ def climgrid(datalist, nlat=90, nlon=144, nlev=38, start=0, end=300, ndata=5,
         ax[i, 2].plot(spec_humidity[:, 45, 72], heights,
                       color='b', label='Antistellar')
         ax[i, 2].legend()
-        ax[0, 2].set_title('Vapor profile [kg/kg]', fontsize=12)
-        ax[ndata-1, 2].set_xlabel('Specific humidity [kg/kg]')
+        ax[0, 2].set_title('Vapor profile [kg/kg]', fontsize=16)
+        ax[ndata-1, 2].set_xlabel('Specific humidity [kg/kg]', fontsize=14)
         # Create third plot (humidity profile) for i'th datacube
 
         surf = ax[i, 3].contourf(np.arange(-72, 72)*2.5, lats, np.roll(
             surface_temp, 72, axis=1), levels=np.arange(100, 400, 20),
             cmap=hot)
-        ax[0, 3].set_title('Surface temperature [K]', fontsize=12)
-        ax[ndata-1, 3].set_xlabel('Longitude [degrees]')
+        ax[0, 3].set_title('Surface temperature [K]', fontsize=14)
+        ax[ndata-1, 3].set_xlabel('Longitude [degrees]', fontsize=14)
         fig.colorbar(surf, ax=ax[i, 3], orientation='vertical')
         # Create fourth plot (surface temperature) for i'th datacube
 

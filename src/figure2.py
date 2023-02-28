@@ -14,8 +14,8 @@ import numpy as np
 import iris
 
 
-def hovmoeller_rwaves(cubes, start=0, end=500, level=8, lats=(55, 85), title='trap',
-                      savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+def hovmoeller_rwaves(cubes, start=0, end=501, level=8, lats=(55, 85), sim='trap',
+                      savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
                       save=False):
     """ Create a Hovmoeller plot of the mean meridional wind between 
     latitudes 55 and 85 North. Directional changes over time at a given
@@ -59,12 +59,13 @@ def hovmoeller_rwaves(cubes, start=0, end=500, level=8, lats=(55, 85), title='tr
                  levels=np.arange(-60, 61, 10), 
                  cmap=redblu, 
                  norm=TwoSlopeNorm(0))
-    plt.title('Mean meridional wind from %s to %s N' % (lats[0], lats[1]))
-    plt.xlabel('Longitude [degrees]')
-    plt.ylabel('Time [days]')
+    plt.title('Mean meridional wind from %s to %s N' % (lats[0], lats[1]),
+              fontsize=16)
+    plt.xlabel('Longitude [degrees]', fontsize=14)
+    plt.ylabel('Time [days]', fontsize=14)
     plt.xticks((-72, -48, -24, 0, 24, 48, 72), 
                ('180W', '120W', '60W', '0', '60E', '120E', '180E'))
-    cbar = plt.colorbar(pad=0.1)
+    cbar = plt.colorbar()
     cbar.set_ticks(np.arange(-60, 61, 10))
     cbar.ax.set_title('m/s')
     # Create our contourfill
@@ -72,7 +73,7 @@ def hovmoeller_rwaves(cubes, start=0, end=500, level=8, lats=(55, 85), title='tr
     # all 5 simulations
 
     if save == True:
-        plt.savefig(savedir + 'hov_rwaves%sto%s_%s.eps' % (start, end, title),
+        plt.savefig(savedir + 'hov_rwaves%sto%s_%s.eps' % (start, end, sim),
                     format='eps', bbox_inches='tight')
     else:
         pass

@@ -19,7 +19,7 @@ warnings.filterwarnings('ignore')
 
 def rwave_velocity(datalist, start=500, end=600, nlat=90, nlon=144, level=8,
                    omega=1.19e-05, g=9.12, radius=5797818, lat=80, meaning=5,
-                   savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+                   savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
                    save=False):
     """ This function calculates the Rossby wave phase speed (including 
     zonal wind) over time. At certain latitudes, the phase velocity alternates 

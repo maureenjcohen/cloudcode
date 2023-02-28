@@ -19,7 +19,7 @@ warnings.filterwarnings('ignore')
 
 def global_cphase(datalist, ndata=5, start=500, end=800, nlat=90, nlon=144,
                   level=8,
-                  savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+                  savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
                   save=False):
     """ This function calculates the Rossby wave phase speed (including 
     zonal wind) over time. At certain latitudes, the phase velocity alternates 
@@ -107,9 +107,9 @@ def global_cphase(datalist, ndata=5, start=500, end=800, nlat=90, nlon=144,
         fig, ax = plt.subplots(figsize=(8, 6))
         plt.contourf(c_phase.T, levels=np.arange(-220, 41, 10),
                      cmap=redblu, norm=TwoSlopeNorm(0))
-        plt.title('Rossby wave phase velocity, h=%s km' % heights[level])
-        plt.xlabel('Time [days]')
-        plt.ylabel('Latitude [degrees]')
+        plt.title('Rossby wave phase velocity, h=%s km' % heights[level], fontsize=14)
+        plt.xlabel('Time [days]', fontsize=14)
+        plt.ylabel('Latitude [degrees]', fontsize=14)
         plt.yticks((0, 15, 30, 45, 60, 75, 90),
                    ('90S', '60S', '30S', '0', '30N', '60N', '90N'))
         mbar = plt.colorbar(pad=0.1)

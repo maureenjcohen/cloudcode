@@ -13,9 +13,9 @@ import iris.coords
 import numpy as np
 
 
-def cloud_bubble(cubes, lat=45, lon=72, start=0, end=120,
-                 savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
-                 save='no'):
+def cloud_bubble(cubes, lat=45, lon=72, start=0, end=120, sim='trap',
+                 savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
+                 save=False):
     """ Creates a contourfill plot of the sum of ice and liquid cloud
     at the equator and at longitude 0 for the input Iris CubeList.
  
@@ -62,16 +62,17 @@ def cloud_bubble(cubes, lat=45, lon=72, start=0, end=120,
     plota = ax1.contourf(np.roll(lons, 72), heights[:final_height],
                          total_cloud[:final_height, lat, :].data*10**4,
                          np.arange(0, 3.5, 0.1), cmap='Blues')
-    ax1.set_title('Total cloud at latitude %s' % lats[lat])
-    ax1.set_xlabel('Longitude [degrees]')
+    ax1.set_title('Total cloud at lat %s' % lats[lat],
+                  fontsize=14)
+    ax1.set_xlabel('Longitude [degrees]', fontsize=14)
     ax1.set_xticks([0, 90, 180, 270, 360], ['180W', '90W', '0', '90E', '180E'])
-    ax1.set_ylabel('Height [km]')
+    ax1.set_ylabel('Height [km]', fontsize=14)
     cba = plt.colorbar(plota)
     cba.ax.set_title('$10^{-4}$ kg/kg', size=10)
     # Create height-longitude plot
 
     if save == True:
-        plt.savefig(savedir + 'cloud_bubble_lat_%s_prox.eps' % lats[lat],
+        plt.savefig(savedir + 'cloud_bubble_lat_%s_%s.eps' % (lats[lat], sim),
                     format='eps', bbox_inches='tight')
     else:
         pass
@@ -81,17 +82,18 @@ def cloud_bubble(cubes, lat=45, lon=72, start=0, end=120,
     plotb = ax2.contourf(lats, heights[:final_height],
                          total_cloud[:final_height, :, lon+71].data*10**4,
                          np.arange(0, 3.5, 0.1), cmap='Blues')
-    ax2.set_title('Total cloud at longitude %s' % np.round(lons[lon+71], 0))
-    ax2.set_xlabel('Latitude [degrees]')
+    ax2.set_title('Total cloud at lon %s' % np.round(lons[lon+71], 0), 
+                  fontsize=14)
+    ax2.set_xlabel('Latitude [degrees]', fontsize=14)
     ax2.set_xticks([-90, -60, -30, 0, 30, 60, 90],
                    ['90S', '60S', '30S', '0', '30N', '60N', '90N'])
-    ax2.set_ylabel('Height [km]')
+    ax2.set_ylabel('Height [km]', fontsize=14)
     cbb = plt.colorbar(plotb)
     cbb.ax.set_title('$10^{-4}$ kg/kg', size=10)
     # Create height-latitude plot
 
     if save == True:
-        plt.savefig(savedir + 'cloud_bubble_lon_%s_prox.eps' % lons[lon],
+        plt.savefig(savedir + 'cloud_bubble_lon_%s_%s.eps' % (lons[lon], sim),
                     format='eps', bbox_inches='tight')
     else:
         pass
