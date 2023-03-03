@@ -152,7 +152,7 @@ def composite(cubes, time_slice=500, nlat=90, nlon=144, nlev=38, level=8, n=4,
         plt.xticks((0, 12, 24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144), 
                    ('180W', '150W','120W', '90W', '60W', '30W', '0', '30E', 
                     '60E', '90E', '120E', '150E', '180E'))
-        plt.yticks((90, 75, 60, 45, 30, 15, 0),
+        plt.yticks((0, 15, 30,45,  60, 75, 90),
                    ('90S', '60S', '30S', '0', '30N', '60N', '90N'))
         plt.xlabel('Longitude', fontsize=14)
         plt.ylabel('Latitude', fontsize=14)

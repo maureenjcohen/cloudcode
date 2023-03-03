@@ -130,6 +130,7 @@ def cloud_tseries(cubes, start=0, end=600, long1=36, long2=108, filtering=True,
     plt.title('Mean Cloud Condensate at %s' % titleloc)
     plt.xlabel('Time [days]')
     plt.ylabel('Cloud condensate [kg/kg]')
+    plt.ylim(0, 2.0e-07)
     plt.legend()
     # This time, plot the two time series on the same axis
 

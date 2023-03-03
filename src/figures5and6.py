@@ -15,8 +15,8 @@ import scipy as sp
 import windspharm
 
 
-def vertical_profile(cubes, start=500, end=600, level=8, top_level=30,
-                     select='absolute',
+def vertical_profile(cubes, start=500, end=700, level=8, top_level=30,
+                     select='absolute', sim='trap',
                      savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
                      save=False):
     """ This function plots the vertical profile of the chosen data input over time.
@@ -30,9 +30,11 @@ def vertical_profile(cubes, start=500, end=600, level=8, top_level=30,
             pressure = cube[start:end, :, :, :].copy()
         if cube.standard_name == 'upward_air_velocity':
             z_wind = cube[start:end, :, :, :].copy()
-        if cube.standard_name == 'mass_fraction_of_cloud_ice_in_air':
+        if (cube.standard_name == 'mass_fraction_of_cloud_ice_in_air' and 
+            cube.shape[0] > end-start):
             ice = cube[start:end, :, :, :].copy()
-        if cube.standard_name == 'mass_fraction_of_cloud_liquid_water_in_air':
+        if (cube.standard_name == 'mass_fraction_of_cloud_liquid_water_in_air'
+            and cube.shape[0] > end-start):
             liq = cube[start:end, :, :, :].copy()
         if cube.standard_name == 'x_wind':
             x_wind = cube[start:end, :, :, :].copy()
@@ -54,6 +56,7 @@ def vertical_profile(cubes, start=500, end=600, level=8, top_level=30,
         colors = heat
         unit = 'K'
         norm = None
+        zmin, zmax, zstep = 270, 291, 2
     elif select == 'potential':
         datacube = theta.copy()
         titleterm = 'potential temperature'
@@ -75,13 +78,15 @@ def vertical_profile(cubes, start=500, end=600, level=8, top_level=30,
         colors = redblu
         unit = '$10^{-4}$ m/s'
         norm = TwoSlopeNorm(0)
+        zmin, zmax, zstep = -18, 50, 4
     elif select == 'cloud':
         datacube = (ice.copy() + liq.copy())*1e6
-        titleterm = 'total cloud (ice and liquid)'
+        titleterm = 'cloud (ice + liquid)'
         y_axis = 'Cloud mass [kg/kg]'
         colors = blues
         unit = '$10^{-6}$ kg/kg'
         norm = None
+        zmin, zmax, zstep = 0, 61, 3
     elif select == 'x_wind':
         datacube = x_wind.copy()
         titleterm = 'zonal wind'
@@ -89,9 +94,10 @@ def vertical_profile(cubes, start=500, end=600, level=8, top_level=30,
         colors = redblu
         unit = 'm/s'
         norm = TwoSlopeNorm(0)
+        zmin, zmax, zstep = -20, 51, 4
 
     heights = np.round(datacube.coord('level_height').points*1e-03, 0)
-    time_axis = np.arange(0, datacube.shape[0])
+    time_axis = np.arange(start, end)
     lats = datacube.coord('latitude')
     lons = datacube.coord('longitude')
 
@@ -109,33 +115,35 @@ def vertical_profile(cubes, start=500, end=600, level=8, top_level=30,
     z_axis = heights[:top_level]
     dayside_time = dayside_mean[:, :top_level].data
 
-    fig1, ax1 = plt.subplots(figsize=(8, 5))
+    fig1, ax1 = plt.subplots(figsize=(6,4))
     ax1.set_xlabel('Time [days]', fontsize=14)
     ax1.set_ylabel('%s' % y_axis, fontsize=14)
     ax1.set_title('Dayside mean %s at h=%s km' % (titleterm, heights[level]),
                   fontsize=14)
-    plt.plot(dayside_mean[:, level].data)
+    plt.plot(time_axis, dayside_mean[:, level].data)
     plt.show()
 
-    fig2, ax2 = plt.subplots(figsize=(8, 5))
+    fig2, ax2 = plt.subplots(figsize=(6, 4))
     ax2.set_xlabel('Time [days]', fontsize=14)
     ax2.set_ylabel('Height [km]', fontsize=14)
     ax2.set_title('Dayside mean %s' % titleterm, fontsize=14)
-    plt.contourf(time_axis, z_axis, dayside_time.T, cmap=colors, norm=norm)
+    plt.contourf(time_axis, z_axis, dayside_time.T, 
+                 levels= np.arange(zmin, zmax, zstep), cmap=colors, norm=norm)
     cbar = plt.colorbar()
     cbar.ax.set_title('%s' % unit)
+    cbar.set_ticks(np.arange(zmin, zmax, zstep))
 
     if save == True:
-        plt.savefig(savedir + '/%s_%s_%s_trap.eps' %
-                    (select, start, end), format='eps', bbox_inches='tight')
+        plt.savefig(savedir + '/%s_%s_%s_%s.eps' %
+                    (select, start, end, sim), format='eps', bbox_inches='tight')
     else:
         pass
 
     plt.show()
 
 
-def swresonance(cubes, start=0, end=100, level=0, 
-                savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs/',
+def swresonance(cubes, start=500, end=700, level=0, sim='trap',
+                savedir='/exports/csce/datastore/geos/users/s1144983/papers/cloudproject/epsfigs_v2/',
                 save=False):
 
     for cube in cubes:
@@ -188,24 +196,24 @@ def swresonance(cubes, start=0, end=100, level=0,
     global_mean = heat.collapsed(
         ['latitude', 'longitude'], iris.analysis.MEAN, weights=grid_areas)
 
-    fig, ax1 = plt.subplots(figsize=(8, 5))
-    ax1.set_xlabel('Time [days]')
-    ax1.set_ylabel('Surface heating [W/m2]')
+    fig, ax1 = plt.subplots(figsize=(6,4))
+    ax1.set_xlabel('Time [days]', fontsize=14)
+    ax1.set_ylabel('Surface heating [W/m2]', fontsize=14)
     ax1.plot(global_mean.data, color='k', label='Heating')
 
     ax2 = ax1.twinx()
-    ax2.set_ylabel('PSD')
+    ax2.set_ylabel('PSD', fontsize=14)
     ax2.plot(one_zero, color='r', label='1-0 wave')
     ax2.plot(wave_sum, color='b', label='Wave sum')
     ax2.ticklabel_format(axis='x', style='sci')
     plt.legend()
 
     plt.title('Mean SW heating and Rossby waves at h=%s km' %
-              km_heights[level], y=1.05)
+              km_heights[level], y=1.05, fontsize=14)
 
-    if save == 'yes':
+    if save == True:
         plt.savefig(savedir +
-            'swresonance_dry.eps', format='eps', bbox_inches='tight')
+            'swresonance_%s.eps' %sim, format='eps', bbox_inches='tight')
     else:
         pass
     plt.show()
